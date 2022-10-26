@@ -1,0 +1,7 @@
+DROP TABLE IF EXISTS `user`;
+
+DROP TABLE IF EXISTS `comment`;
+
+DROP TABLE IF EXISTS `social_media`;
+
+DROP TABLE IF EXISTS `photo`;
