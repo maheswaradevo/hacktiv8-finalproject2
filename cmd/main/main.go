@@ -1,13 +1,16 @@
 package main
 
 import (
-	"fmt"
-
 	"github.com/gin-gonic/gin"
+	"github.com/maheswaradevo/hacktiv8-finalproject2/internal/global/config"
+	"github.com/maheswaradevo/hacktiv8-finalproject2/internal/global/routes"
 )
 
 func main() {
-	fmt.Println("Hello world")
+	config.Init()
+	cfg := config.GetConfig()
+
 	r := gin.Default()
-	r.Run()
+	routes.Init(r)
+	r.Run(cfg.PORT)
 }
