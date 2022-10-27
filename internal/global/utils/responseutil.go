@@ -8,8 +8,7 @@ import (
 )
 
 func NewSuccessResponseWriter(rw http.ResponseWriter, code int, status string, data interface{}) dto.BaseResponse {
-	response := BaseResponseWriter(rw, code, status, nil, data)
-	return response
+	return BaseResponseWriter(rw, code, status, nil, data)
 }
 
 func NewErrorResponse(rw http.ResponseWriter, err error) dto.BaseResponse {
