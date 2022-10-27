@@ -23,7 +23,7 @@ func (auth *AuthServiceImpl) RegisterUser(ctx context.Context, data *dto.UserReg
 	userData := data.ToEntity()
 
 	exist, err := auth.repo.GetUserEmail(ctx, userData.Email)
-	if err != nil {
+	if err != nil && err != errors.ErrInvalidResources {
 		log.Printf("[RegisterUser] failed to check duplicate email: %v", err)
 		return err
 	}

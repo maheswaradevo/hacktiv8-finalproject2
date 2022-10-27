@@ -6,6 +6,7 @@ import (
 	"log"
 
 	"github.com/maheswaradevo/hacktiv8-finalproject2/internal/models"
+	"github.com/maheswaradevo/hacktiv8-finalproject2/pkg/errors"
 )
 
 type AuthRepository interface {
@@ -48,9 +49,12 @@ func (auth *AuthImpl) GetUserEmail(ctx context.Context, email string) (*models.U
 	user := &models.User{}
 
 	err := res.Scan(&user.UserID, &user.Email, &user.Username)
-	if err != nil {
+	if err != nil && err != sql.ErrNoRows {
 		log.Printf("[GetUserEmail] failed to scan the data: %v", err)
 		return nil, err
+	} else if err == sql.ErrNoRows {
+		log.Printf("[GetUserEmail] no data existed in the database\n")
+		return nil, errors.ErrInvalidResources
 	}
 	return user, nil
 }

@@ -12,6 +12,7 @@ var (
 	ErrInvalidRequestBody = errors.New("invalid request body")
 	ErrNotFound           = errors.New("data not found")
 	ErrUserExists         = errors.New("email is already taken")
+	ErrInvalidResources   = errors.New("resources is empty")
 )
 
 func NewErrorData(code int, message string) dto.ErrorData {
@@ -34,4 +35,5 @@ var errorMap = map[error]dto.ErrorData{
 	ErrInvalidRequestBody: NewErrorData(http.StatusBadRequest, ErrInvalidRequestBody.Error()),
 	ErrNotFound:           NewErrorData(http.StatusNotFound, ErrNotFound.Error()),
 	ErrUserExists:         NewErrorData(http.StatusBadRequest, ErrUserExists.Error()),
+	ErrInvalidResources:   NewErrorData(http.StatusNotFound, ErrInvalidResources.Error()),
 }
