@@ -9,12 +9,25 @@ type UserRegistrationRequest struct {
 	Age      int    `json:"age"`
 }
 
+type UserSignInRequest struct {
+	Email    string `json:"email"`
+	Password string `json:"password"`
+}
+
 func (dto *UserRegistrationRequest) ToEntity() (usr *models.User) {
 	usr = &models.User{
 		Email:    dto.Email,
 		Password: dto.Password,
 		Username: dto.Username,
 		Age:      dto.Age,
+	}
+	return
+}
+
+func (dto *UserSignInRequest) ToEntity() (usr *models.User) {
+	usr = &models.User{
+		Email:    dto.Email,
+		Password: dto.Password,
 	}
 	return
 }
