@@ -11,6 +11,7 @@ import (
 type AuthService interface {
 	RegisterUser(ctx context.Context, data *dto.UserRegistrationRequest) error
 	LoginUser(ctx context.Context, data *dto.UserSignInRequest) (res *dto.UserSignInResponse, err error)
+	UpdateUser(ctx context.Context, data *dto.UserEditProfileRequest, userID uint64) (res *dto.UserEditProfileResponse, err error)
 }
 
 func ProvideAuthService(db *sql.DB) AuthService {

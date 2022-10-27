@@ -76,12 +76,35 @@ func (auth *AuthServiceImpl) LoginUser(ctx context.Context, data *dto.UserSignIn
 	return dto.NewUserSignInResponse(token), nil
 }
 
+func (auth AuthServiceImpl) UpdateUser(ctx context.Context, data *dto.UserEditProfileRequest, userID uint64) (res *dto.UserEditProfileResponse, err error) {
+	userInfo := data.ToEntity()
+
+	exist, err := auth.repo.GetUserEmail(ctx, userInfo.Email)
+	if err != nil && err != errors.ErrInvalidResources {
+		log.Printf("[UpdateUser] failed to check user existed: %v", err)
+		return
+	}
+
+	if exist == nil {
+		err = errors.ErrNotFound
+		log.Printf("[UpdateUser] user not found, email: %v", userInfo.Email)
+		return
+	}
+
+	err = auth.repo.UpdateUser(ctx, userID, *userInfo)
+	if err != nil {
+		log.Printf("[UpdateUser] failed to update the user, id: %v", userID)
+		return
+	}
+	return dto.NewUserEditProfileResponse(*userInfo, userID), nil
+}
+
 func (auth AuthServiceImpl) createAccessToken(user *models.User) (string, error) {
 	cfg := config.GetConfig()
 
 	claim := jwt.MapClaims{}
 	claim["authorized"] = true
-	claim["exp"] = time.Now().Add(time.Minute * 1).Unix()
+	claim["exp"] = time.Now().Add(time.Minute * 15).Unix()
 	claim["user_id"] = user.UserID
 
 	token := jwt.NewWithClaims(cfg.JWT_SIGNING_METHOD, claim)
