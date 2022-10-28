@@ -13,6 +13,8 @@ type AuthRepository interface {
 	InsertUser(ctx context.Context, data models.User) error
 	GetUserEmail(ctx context.Context, email string) (*models.User, error)
 	UpdateUser(ctx context.Context, userID uint64, data models.User) error
+	DeleteUser(ctx context.Context, userID uint64) error
+	FindUserByID(ctx context.Context, userID uint64) (*models.User, error)
 }
 type AuthImpl struct {
 	db *sql.DB
@@ -25,9 +27,11 @@ func ProvideAuthRepository(db *sql.DB) *AuthImpl {
 }
 
 var (
-	INSERT_USER    = "INSERT INTO `user`(email, password, age, username) VALUES (?, ?, ?, ?);"
-	GET_USER_EMAIL = "SELECT id, email, username, password FROM user WHERE email=?;"
-	UPDATE_USER    = "UPDATE `user` SET email = ?, username = ?, age = ? WHERE id = ?;"
+	INSERT_USER     = "INSERT INTO `user`(email, password, age, username) VALUES (?, ?, ?, ?);"
+	GET_USER_EMAIL  = "SELECT id, email, username, password FROM user WHERE email=?;"
+	UPDATE_USER     = "UPDATE `user` SET email = ?, username = ?, age = ? WHERE id = ?;"
+	DELETE_USER     = "DELETE FROM `user` WHERE id=?"
+	FIND_USER_BY_ID = "SELECT id, email, username FROM user WHERE id=?"
 )
 
 func (auth *AuthImpl) InsertUser(ctx context.Context, data models.User) error {
@@ -74,4 +78,36 @@ func (auth *AuthImpl) UpdateUser(ctx context.Context, userID uint64, data models
 		return err
 	}
 	return nil
+}
+
+func (auth *AuthImpl) DeleteUser(ctx context.Context, userID uint64) error {
+	query := DELETE_USER
+	stmt, err := auth.db.PrepareContext(ctx, query)
+	if err != nil {
+		log.Printf("[DeleteUser] failed to prepare the statement: %v", err)
+		return err
+	}
+
+	_, err = stmt.QueryContext(ctx, userID)
+	if err != nil {
+		log.Printf("[DeleteUser] failed to delete user, id: %v, err: %v", userID, err)
+		return err
+	}
+	return nil
+}
+
+func (auth *AuthImpl) FindUserByID(ctx context.Context, userID uint64) (*models.User, error) {
+	query := FIND_USER_BY_ID
+	res := auth.db.QueryRowContext(ctx, query, userID)
+	user := &models.User{}
+
+	err := res.Scan(&user.UserID, &user.Email, &user.Username)
+	if err != nil && err != sql.ErrNoRows {
+		log.Printf("[FindUserByID] failed to scan the data: %v", err)
+		return nil, err
+	} else if err == sql.ErrNoRows {
+		log.Printf("[FindUserByID] no data exist in the database\n")
+		return nil, errors.ErrInvalidResources
+	}
+	return user, nil
 }

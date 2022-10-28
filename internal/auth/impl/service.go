@@ -99,6 +99,27 @@ func (auth AuthServiceImpl) UpdateUser(ctx context.Context, data *dto.UserEditPr
 	return dto.NewUserEditProfileResponse(*userInfo, userID), nil
 }
 
+func (auth AuthServiceImpl) DeleteUser(ctx context.Context, userID uint64) (*dto.UserDeleteAccountResponse, error) {
+	exists, err := auth.repo.FindUserByID(ctx, userID)
+	if err != nil && err != errors.ErrInvalidResources {
+		log.Printf("[DeleteUser] failed to check user, id: %v, err: %v", userID, err)
+		return nil, err
+	}
+	if exists == nil {
+		err = errors.ErrNotFound
+		log.Printf("[DeleteUser] user not found, id: %v", exists.UserID)
+		return nil, err
+	}
+
+	err = auth.repo.DeleteUser(ctx, userID)
+	if err != nil {
+		log.Printf("[DeleteUser] failed to delete user, id: %v", userID)
+		return nil, err
+	}
+	msg := "Your account has been successfully deleted"
+	return dto.NewUserDeleteAccountResponse(msg), nil
+}
+
 func (auth AuthServiceImpl) createAccessToken(user *models.User) (string, error) {
 	cfg := config.GetConfig()
 
