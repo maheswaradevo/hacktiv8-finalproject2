@@ -34,6 +34,7 @@ func (auth *AuthHandler) InitHandler() {
 	protectedRoute := auth.r.Group(constant.ROOT_API_PATH)
 	protectedRoute.Use(middleware.AuthMiddleware())
 	protectedRoute.PUT("/users", auth.updateUser)
+	protectedRoute.DELETE("/users", auth.deleteUser)
 }
 
 func (auth *AuthHandler) registerUser(c *gin.Context) {
@@ -96,4 +97,19 @@ func (auth *AuthHandler) updateUser(c *gin.Context) {
 	}
 	response := utils.NewSuccessResponseWriter(c.Writer, http.StatusCreated, "SUCCESS", res)
 	c.JSON(http.StatusCreated, response)
+}
+
+func (auth *AuthHandler) deleteUser(c *gin.Context) {
+	userData := c.MustGet("userData").(jwt.MapClaims)
+	userID := uint64(userData["user_id"].(float64))
+
+	res, err := auth.as.DeleteUser(c, userID)
+	if err != nil {
+		log.Printf("[deleteUser] failed to delete user, id: %v, err: %v", userID, err)
+		errResponse := utils.NewErrorResponse(c.Writer, err)
+		c.JSON(errResponse.Error.Code, errResponse)
+	}
+
+	response := utils.NewSuccessResponseWriter(c.Writer, http.StatusOK, "SUCCESS", res)
+	c.JSON(http.StatusOK, response)
 }

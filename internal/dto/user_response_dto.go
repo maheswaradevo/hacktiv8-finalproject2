@@ -18,6 +18,10 @@ type UserEditProfileResponse struct {
 	UpdatedAt time.Time `json:"updated_at"`
 }
 
+type UserDeleteAccountResponse struct {
+	Message string `json:"message"`
+}
+
 func NewUserSignInResponse(ac string) *UserSignInResponse {
 	return &UserSignInResponse{
 		AccessToken: ac,
@@ -31,5 +35,11 @@ func NewUserEditProfileResponse(usr models.User, userID uint64) *UserEditProfile
 		Username:  usr.Username,
 		Age:       usr.Age,
 		UpdatedAt: time.Now(),
+	}
+}
+
+func NewUserDeleteAccountResponse(msg string) *UserDeleteAccountResponse {
+	return &UserDeleteAccountResponse{
+		Message: msg,
 	}
 }
