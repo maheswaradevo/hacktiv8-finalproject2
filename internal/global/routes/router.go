@@ -5,6 +5,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/maheswaradevo/hacktiv8-finalproject2/internal/auth"
+	"github.com/maheswaradevo/hacktiv8-finalproject2/internal/socialmedia"
 	"github.com/maheswaradevo/hacktiv8-finalproject2/internal/ping"
 )
 
@@ -16,4 +17,8 @@ func Init(router *gin.Engine, db *sql.DB) {
 	authService := auth.ProvideAuthService(db)
 	authHandler := auth.ProvideAuthHandler(router, authService)
 	authHandler.InitHandler()
+
+	scmdService := socialmedia.ProvideSocialMediaService(db)
+	scmdHandler := socialmedia.ProvideSocialMediaHandler(router, scmdService)
+	scmdHandler.InitHandler()
 }
