@@ -22,6 +22,13 @@ type UserDeleteAccountResponse struct {
 	Message string `json:"message"`
 }
 
+type UserSignUpResponse struct {
+	UserID   uint64 `json:"id"`
+	Email    string `json:"email"`
+	Username string `json:"username"`
+	Age      int    `json:"age"`
+}
+
 func NewUserSignInResponse(ac string) *UserSignInResponse {
 	return &UserSignInResponse{
 		AccessToken: ac,
@@ -41,5 +48,14 @@ func NewUserEditProfileResponse(usr models.User, userID uint64) *UserEditProfile
 func NewUserDeleteAccountResponse(msg string) *UserDeleteAccountResponse {
 	return &UserDeleteAccountResponse{
 		Message: msg,
+	}
+}
+
+func NewUserSignUpResponse(usr models.User) *UserSignUpResponse {
+	return &UserSignUpResponse{
+		UserID:   usr.UserID,
+		Email:    usr.Email,
+		Username: usr.Username,
+		Age:      usr.Age,
 	}
 }

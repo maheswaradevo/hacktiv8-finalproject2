@@ -46,14 +46,14 @@ func (auth *AuthHandler) registerUser(c *gin.Context) {
 		c.JSON(errResponse.Error.Code, errResponse)
 		return
 	}
-	err = auth.as.RegisterUser(c, data)
+	res, err := auth.as.RegisterUser(c, data)
 	if err != nil {
 		log.Printf("[registerUser] failed to register a user: %v", err)
 		errResponse := utils.NewErrorResponse(c.Writer, err)
 		c.JSON(errResponse.Error.Code, errResponse)
 		return
 	}
-	response := utils.NewSuccessResponseWriter(c.Writer, http.StatusCreated, "SUCCESS", data)
+	response := utils.NewSuccessResponseWriter(c.Writer, http.StatusCreated, "SUCCESS", res)
 	c.JSON(http.StatusCreated, response)
 }
 
