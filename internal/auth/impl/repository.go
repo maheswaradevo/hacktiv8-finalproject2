@@ -10,7 +10,7 @@ import (
 )
 
 type AuthRepository interface {
-	InsertUser(ctx context.Context, data models.User) error
+	InsertUser(ctx context.Context, data models.User) (uint64, error)
 	GetUserEmail(ctx context.Context, email string) (*models.User, error)
 	UpdateUser(ctx context.Context, userID uint64, data models.User) error
 	DeleteUser(ctx context.Context, userID uint64) error
@@ -34,19 +34,20 @@ var (
 	FIND_USER_BY_ID = "SELECT id, email, username FROM user WHERE id=?"
 )
 
-func (auth *AuthImpl) InsertUser(ctx context.Context, data models.User) error {
+func (auth *AuthImpl) InsertUser(ctx context.Context, data models.User) (uint64, error) {
 	query := INSERT_USER
 	stmt, err := auth.db.PrepareContext(ctx, query)
 	if err != nil {
 		log.Printf("[InserUser] failed to prepare the statement: %v", err)
-		return err
+		return 0, err
 	}
-	_, err = stmt.ExecContext(ctx, data.Email, data.Password, data.Age, data.Username)
+	res, err := stmt.ExecContext(ctx, data.Email, data.Password, data.Age, data.Username)
 	if err != nil {
 		log.Printf("[InserUser] failed to insert user to the database: %v", err)
-		return err
+		return 0, err
 	}
-	return nil
+	userID, _ := res.LastInsertId()
+	return uint64(userID), nil
 }
 
 func (auth *AuthImpl) GetUserEmail(ctx context.Context, email string) (*models.User, error) {

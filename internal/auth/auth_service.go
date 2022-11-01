@@ -9,7 +9,7 @@ import (
 )
 
 type AuthService interface {
-	RegisterUser(ctx context.Context, data *dto.UserRegistrationRequest) error
+	RegisterUser(ctx context.Context, data *dto.UserRegistrationRequest) (*dto.UserSignUpResponse, error)
 	LoginUser(ctx context.Context, data *dto.UserSignInRequest) (res *dto.UserSignInResponse, err error)
 	UpdateUser(ctx context.Context, data *dto.UserEditProfileRequest, userID uint64) (res *dto.UserEditProfileResponse, err error)
 	DeleteUser(ctx context.Context, userID uint64) (*dto.UserDeleteAccountResponse, error)
