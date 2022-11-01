@@ -29,7 +29,7 @@ func ProvideSocialMediaHandler(r *gin.Engine, as SocialMediaService) *SocialMedi
 func (scmd *SocialMediaHandler) InitHandler() {
 	protectedRoute := scmd.r.Group(constant.ROOT_API_PATH)
 	protectedRoute.Use(middleware.AuthMiddleware())
-	protectedRoute.POST("/social-media", scmd.createSocialMedia)
+	protectedRoute.POST("/social-medias", scmd.createSocialMedia)
 }
 
 func (scmd *SocialMediaHandler) createSocialMedia(c *gin.Context) {
@@ -44,12 +44,12 @@ func (scmd *SocialMediaHandler) createSocialMedia(c *gin.Context) {
 	userData := c.MustGet("userData").(jwt.MapClaims)
 	userID := uint64(userData["user_id"].(float64))
 
-	err = scmd.as.CreateSocialMedia(c, data, userID)
+	res, err := scmd.as.CreateSocialMedia(c, data, userID)
 	if err != nil {
 		log.Printf("[createSocialMedia] failed to create user, err: %v", err)
 		errResponse := utils.NewErrorResponse(c.Writer, err)
 		c.JSON(errResponse.Error.Code, errResponse)
 	}
-	response := utils.NewSuccessResponseWriter(c.Writer, http.StatusCreated, "SUCCESS", data)
+	response := utils.NewSuccessResponseWriter(c.Writer, http.StatusCreated, "SUCCESS", res)
 	c.JSON(http.StatusCreated, response)
 }

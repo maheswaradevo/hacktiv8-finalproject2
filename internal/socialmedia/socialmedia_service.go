@@ -9,7 +9,7 @@ import (
 )
 
 type SocialMediaService interface {
-	CreateSocialMedia(ctx context.Context, data *dto.CreateSocialMediaRequest, userID uint64) error
+	CreateSocialMedia(ctx context.Context, data *dto.CreateSocialMediaRequest, userID uint64) (res *dto.CreateSocialMediaResponse, err error)
 }
 
 func ProvideSocialMediaService(db *sql.DB) SocialMediaService {

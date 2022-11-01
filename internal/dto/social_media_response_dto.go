@@ -1,29 +1,25 @@
 package dto
 
-import "github.com/maheswaradevo/hacktiv8-finalproject2/internal/models"
+import (
+	"time"
 
-type SocialMediaResponse struct {
-	ID             uint64 `json:"id"`
-	Name           string `json:"name"`
-	SocialMediaURL string `json:"social_media_url"`
+	"github.com/maheswaradevo/hacktiv8-finalproject2/internal/models"
+)
+
+type CreateSocialMediaResponse struct {
+	SocialMediaID  uint64    `json:"id"`
+	Name           string    `json:"name"`
+	SocialMediaURL string    `json:"social_media_url"`
+	UserID         uint64    `json:"user_id"`
+	CreatedAt      time.Time `json:"created_at"`
 }
 
-type SocialMediaResponses []SocialMediaResponse
-
-func CreateSocialMediaResponse(scmd models.SocialMedia) SocialMediaResponse {
-	return SocialMediaResponse{
-		ID:             scmd.SocialMediaID,
+func NewSocialMediaCreateResponse(scmd models.SocialMedia, userID uint64, socialMediaID uint64) *CreateSocialMediaResponse {
+	return &CreateSocialMediaResponse{
+		SocialMediaID: 	socialMediaID,
 		Name:           scmd.Name,
 		SocialMediaURL: scmd.SocialMediaURL,
+		UserID:         userID,
+		CreatedAt:      time.Now(),
 	}
-}
-
-func CreateSocialMediaResponses(t models.SocialMedias) *SocialMediaResponses {
-	var socialMediaResponses SocialMediaResponses
-
-	for _, idx := range t {
-		todo := CreateSocialMediaResponse(*idx)
-		socialMediaResponses = append(socialMediaResponses, todo)
-	}
-	return &socialMediaResponses
 }

@@ -17,13 +17,14 @@ func ProvideSocialMediaService(repo SocialMediaRepository) *SocialMediaServiceIm
 	}
 }
 
-func (scmd *SocialMediaServiceImpl) CreateSocialMedia(ctx context.Context, data *dto.CreateSocialMediaRequest, userID uint64) error {
+func (scmd *SocialMediaServiceImpl) CreateSocialMedia(ctx context.Context, data *dto.CreateSocialMediaRequest, userID uint64) (res *dto.CreateSocialMediaResponse, err error) {
 	socialMediaData := data.ToEntity()
 
-	err := scmd.repo.CreateSocialMedia(ctx, *socialMediaData, userID)
+	socialMediaID, err := scmd.repo.CreateSocialMedia(ctx, *socialMediaData, userID) 
 	if err != nil {
-		log.Printf("[RegisterUser] failed to store user data to database: %v", err)
-		return err
+		log.Printf("[CreateSocialMedia] failed to store user data to database: %v", err)
+		return 
 	}
-	return nil
+
+	return dto.NewSocialMediaCreateResponse(*socialMediaData, userID, socialMediaID), nil
 }

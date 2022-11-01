@@ -9,7 +9,7 @@ import (
 )
 
 type SocialMediaRepository interface {
-	CreateSocialMedia(ctx context.Context, data models.SocialMedia, userID uint64) error
+	CreateSocialMedia(ctx context.Context, data models.SocialMedia, userID uint64) (uint64, error)
 }
 type SocialMediaImpl struct {
 	db *sql.DB
@@ -25,17 +25,26 @@ var (
 	CREATE_SOCIAL_MEDIA = "INSERT INTO `social_media`(name, social_media_url, user_id) VALUES (?, ?, ?);"
 )
 
-func (scmd *SocialMediaImpl) CreateSocialMedia(ctx context.Context, data models.SocialMedia, userID uint64) error {
+func (scmd *SocialMediaImpl) CreateSocialMedia(ctx context.Context, data models.SocialMedia, userID uint64) (uint64, error) {
 	query := CREATE_SOCIAL_MEDIA
 	stmt, err := scmd.db.PrepareContext(ctx, query)
 	if err != nil {
 		log.Printf("[CreateSocialMedia] failed to prepare the statement: %v", err)
-		return err
+		return uint64(0), err
 	}
-	_, err = stmt.ExecContext(ctx, data.Name, data.SocialMediaURL, userID)
+	
+	res, err := stmt.ExecContext(ctx, data.Name, data.SocialMediaURL, userID)
 	if err != nil {
 		log.Printf("[CreateSocialMedia] failed to insert user to the database: %v", err)
-		return err
+		return uint64(0), err
 	}
-	return nil
+	id, err := res.LastInsertId()
+	if err != nil {
+		log.Printf("[CreateSocialMedia] failed to insert user to the database: %v", err)
+		return uint64(id), err
+	}
+
+	
+	return uint64(id), nil
+
 }
