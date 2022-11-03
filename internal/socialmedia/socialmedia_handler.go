@@ -30,6 +30,7 @@ func (scmd *SocialMediaHandler) InitHandler() {
 	protectedRoute := scmd.r.Group(constant.ROOT_API_PATH)
 	protectedRoute.Use(middleware.AuthMiddleware())
 	protectedRoute.POST("/social-medias", scmd.createSocialMedia)
+	protectedRoute.GET("/social-medias", scmd.viewSocialMedia)
 }
 
 func (scmd *SocialMediaHandler) createSocialMedia(c *gin.Context) {
@@ -52,4 +53,16 @@ func (scmd *SocialMediaHandler) createSocialMedia(c *gin.Context) {
 	}
 	response := utils.NewSuccessResponseWriter(c.Writer, http.StatusCreated, "SUCCESS", res)
 	c.JSON(http.StatusCreated, response)
+}
+
+func (scmd *SocialMediaHandler) viewSocialMedia(c *gin.Context) {
+	res, err := scmd.as.ViewSocialMedia(c)
+	if err != nil {
+		log.Printf("[viewSocialMedia] failed to view social media, err: %v", err)
+		errResponse := utils.NewErrorResponse(c.Writer, err)
+		c.JSON(errResponse.Error.Code, errResponse)
+		return
+	}
+	response := utils.NewSuccessResponseWriter(c.Writer, http.StatusOK, "SUCCESS", res)
+	c.JSON(http.StatusOK, response)
 }

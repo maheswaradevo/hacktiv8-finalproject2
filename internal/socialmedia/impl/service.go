@@ -5,6 +5,7 @@ import (
 	"log"
 
 	"github.com/maheswaradevo/hacktiv8-finalproject2/internal/dto"
+	"github.com/maheswaradevo/hacktiv8-finalproject2/pkg/errors"
 )
 
 type SocialMediaServiceImpl struct {
@@ -27,4 +28,23 @@ func (scmd *SocialMediaServiceImpl) CreateSocialMedia(ctx context.Context, data 
 	}
 
 	return dto.NewSocialMediaCreateResponse(*socialMediaData, userID, socialMediaID), nil
+}
+
+func (scmd *SocialMediaServiceImpl) ViewSocialMedia(ctx context.Context) (dto.ViewSocialMediasResponse, error) {
+	count, err := scmd.repo.CountSocialMedia(ctx)
+	if err != nil {
+		log.Printf("[ViewSocialMedia] failed to count the social media, err: %v", err)
+		return nil, err
+	}
+	if count == 0 {
+		err = errors.ErrDataNotFound
+		log.Printf("[ViewSocialMedia] no data exists in the database: %v", err)
+		return nil, err
+	}
+	res, err := scmd.repo.ViewSocialMedia(ctx)
+	if err != nil {
+		log.Printf("[ViewSocialMedia] failed to view the social media, err: %v", err)
+		return nil, err
+	}
+	return dto.NewViewSocialMediasResponse(res), nil
 }
