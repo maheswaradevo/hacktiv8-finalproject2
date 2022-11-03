@@ -24,7 +24,7 @@ func ProvidePhotoRepository(db *sql.DB) *photoImpl {
 
 var (
 	INSERT_PHOTO = "INSERT INTO `photo` (title, caption, photo_url, user_id) VALUES (?, ?, ?, ?);"
-	VIEW_PHOTO   = "SELECT p.id, p.title, p.caption, p.photo_url, p.user_id, p.created_at, p.updated_at, u.email, u.username FROM photo p JOIN `user` u ON u.id = p.user_id;"
+	VIEW_PHOTO   = "SELECT p.id, p.title, p.caption, p.photo_url, p.user_id, p.created_at, p.updated_at, u.email, u.username FROM photo p JOIN `user` u ON u.id = p.user_id ORDER BY p.created_at DESC;"
 	COUNT_PHOTO  = "SELECT COUNT(*) FROM photo;"
 )
 
