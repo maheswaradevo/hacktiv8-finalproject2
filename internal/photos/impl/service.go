@@ -5,6 +5,7 @@ import (
 	"log"
 
 	"github.com/maheswaradevo/hacktiv8-finalproject2/internal/dto"
+	"github.com/maheswaradevo/hacktiv8-finalproject2/pkg/errors"
 )
 
 type PhotoServiceImpl struct {
@@ -25,4 +26,23 @@ func (ph *PhotoServiceImpl) PostPhoto(ctx context.Context, data *dto.PostPhotoRe
 	}
 	photoData.PhotoID = res
 	return dto.NewPostPhotoResponse(*photoData, userID), nil
+}
+
+func (ph *PhotoServiceImpl) ViewPhoto(ctx context.Context) (dto.ViewPhotosResponse, error) {
+	count, err := ph.repo.CountPhoto(ctx)
+	if err != nil {
+		log.Printf("[ViewPhoto] failed to count the photo, err: %v", err)
+		return nil, err
+	}
+	if count == 0 {
+		err = errors.ErrDataNotFound
+		log.Printf("[ViewPhoto] no data exists in the database: %v", err)
+		return nil, err
+	}
+	res, err := ph.repo.ViewPhoto(ctx)
+	if err != nil {
+		log.Printf("[ViewPhoto] failed to view the photo, err: %v", err)
+		return nil, err
+	}
+	return dto.NewViewPhotosResponse(res), nil
 }

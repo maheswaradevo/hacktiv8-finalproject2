@@ -27,6 +27,7 @@ func (p *photoHandler) InitHandler() {
 	photoRoute := p.r.Group(constant.ROOT_API_PATH)
 	photoRoute.Use(middleware.AuthMiddleware())
 	photoRoute.POST("/photos", p.postPhoto)
+	photoRoute.GET("/photos", p.viewPhoto)
 }
 
 func (p *photoHandler) postPhoto(c *gin.Context) {
@@ -50,4 +51,16 @@ func (p *photoHandler) postPhoto(c *gin.Context) {
 	}
 	response := utils.NewSuccessResponseWriter(c.Writer, http.StatusCreated, "SUCCESS", res)
 	c.JSON(http.StatusCreated, response)
+}
+
+func (p *photoHandler) viewPhoto(c *gin.Context) {
+	res, err := p.ps.ViewPhoto(c)
+	if err != nil {
+		log.Printf("[viewPhoto] failed to view photo, err: %v", err)
+		errResponse := utils.NewErrorResponse(c.Writer, err)
+		c.JSON(errResponse.Error.Code, errResponse)
+		return
+	}
+	response := utils.NewSuccessResponseWriter(c.Writer, http.StatusOK, "SUCCESS", res)
+	c.JSON(http.StatusOK, response)
 }
