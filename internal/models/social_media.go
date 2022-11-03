@@ -11,4 +11,10 @@ type SocialMedia struct {
 	UpdatedAt      time.Time `db:"updated_at"`
 }
 
+type SocialMediaUserJoined struct {
+	SocialMedia
+	User
+}
+
+type PeopleSocialMediaJoined []*SocialMediaUserJoined
 type SocialMedias []*SocialMedia
