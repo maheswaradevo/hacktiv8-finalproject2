@@ -12,4 +12,10 @@ type Photo struct {
 	UpdatedAt time.Time `db:"updated_at"`
 }
 
+type PhotoUserJoined struct {
+	Photo
+	User
+}
+
+type PeoplePhotoJoined []*PhotoUserJoined
 type Photos []*Photo

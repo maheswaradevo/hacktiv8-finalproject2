@@ -10,6 +10,7 @@ import (
 
 type PhotoService interface {
 	PostPhoto(ctx context.Context, data *dto.PostPhotoRequest, userID uint64) (*dto.PostPhotoResponse, error)
+	ViewPhoto(ctx context.Context) (dto.ViewPhotosResponse, error)
 }
 
 func ProvidePhotoService(db *sql.DB) PhotoService {
