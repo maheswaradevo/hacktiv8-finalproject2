@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v4"
@@ -28,6 +29,7 @@ func (p *photoHandler) InitHandler() {
 	photoRoute.Use(middleware.AuthMiddleware())
 	photoRoute.POST("/photos", p.postPhoto)
 	photoRoute.GET("/photos", p.viewPhoto)
+	photoRoute.PUT("/photos/:photoID", p.updatePhoto)
 }
 
 func (p *photoHandler) postPhoto(c *gin.Context) {
@@ -63,4 +65,29 @@ func (p *photoHandler) viewPhoto(c *gin.Context) {
 	}
 	response := utils.NewSuccessResponseWriter(c.Writer, http.StatusOK, "SUCCESS", res)
 	c.JSON(http.StatusOK, response)
+}
+
+func (p *photoHandler) updatePhoto(c *gin.Context) {
+	data := &dto.EditPhotoRequest{}
+	err := json.NewDecoder(c.Request.Body).Decode(data)
+	if err != nil {
+		log.Printf("[updatePhoto] failed to parse json data: %v", err)
+		errResponse := utils.NewErrorResponse(c.Writer, errors.ErrInvalidRequestBody)
+		c.JSON(errResponse.Error.Code, errResponse)
+		return
+	}
+	userData := c.MustGet("userData").(jwt.MapClaims)
+	userID := uint64(userData["user_id"].(float64))
+	photoID := c.Param("photoID")
+	photoIDConv, _ := strconv.ParseUint(photoID, 10, 64)
+
+	res, err := p.ps.UpdatePhoto(c, data, photoIDConv, userID)
+	if err != nil {
+		log.Printf("[updatePhoto] failed to update photo, id: %v, err: %v", photoIDConv, err)
+		errResponse := utils.NewErrorResponse(c.Writer, err)
+		c.JSON(errResponse.Error.Code, errResponse)
+		return
+	}
+	response := utils.NewSuccessResponseWriter(c.Writer, http.StatusCreated, "SUCCESS", res)
+	c.JSON(http.StatusCreated, response)
 }

@@ -26,12 +26,32 @@ type ViewPhotoResponse struct {
 	User      userResponse `json:"user"`
 }
 
+type EditPhotoResponse struct {
+	PhotoID   uint64    `json:"id"`
+	Title     string    `json:"title"`
+	Caption   string    `json:"caption"`
+	PhotoUrl  string    `json:"photo_url"`
+	UserID    uint64    `json:"user_id"`
+	UpdatedAt time.Time `json:"updated_at"`
+}
+
 type userResponse struct {
 	Email    string `json:"email"`
 	Username string `json:"username"`
 }
 
 type ViewPhotosResponse []*ViewPhotoResponse
+
+func NewEditPhotoResponse(ph models.Photo, userID uint64) *EditPhotoResponse {
+	return &EditPhotoResponse{
+		PhotoID:   ph.PhotoID,
+		Title:     ph.Title,
+		Caption:   ph.Caption,
+		PhotoUrl:  ph.PhotoUrl,
+		UserID:    userID,
+		UpdatedAt: time.Now(),
+	}
+}
 
 func NewPostPhotoResponse(ph models.Photo, userID uint64) *PostPhotoResponse {
 	return &PostPhotoResponse{
