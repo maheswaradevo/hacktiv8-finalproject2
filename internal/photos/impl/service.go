@@ -49,7 +49,7 @@ func (ph *PhotoServiceImpl) ViewPhoto(ctx context.Context) (dto.ViewPhotosRespon
 
 func (ph *PhotoServiceImpl) UpdatePhoto(ctx context.Context, data *dto.EditPhotoRequest, photoID uint64, userID uint64) (*dto.EditPhotoResponse, error) {
 	editPhoto := data.ToEntity()
-	check, err := ph.repo.CheckPhoto(ctx, photoID)
+	check, err := ph.repo.CheckPhoto(ctx, photoID, userID)
 	if err != nil {
 		log.Printf("[UpdatePhoto] failed to check photo with, userID: %v, err: %v", userID, err)
 		return nil, err
