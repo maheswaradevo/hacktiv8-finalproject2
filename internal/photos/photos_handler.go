@@ -88,6 +88,6 @@ func (p *photoHandler) updatePhoto(c *gin.Context) {
 		c.JSON(errResponse.Error.Code, errResponse)
 		return
 	}
-	response := utils.NewSuccessResponseWriter(c.Writer, http.StatusCreated, "SUCCESS", res)
-	c.JSON(http.StatusCreated, response)
+	response := utils.NewSuccessResponseWriter(c.Writer, http.StatusOK, "SUCCESS", res)
+	c.JSON(http.StatusOK, response)
 }
