@@ -26,6 +26,14 @@ type ViewSocialMediaResponse struct {
 
 type ViewSocialMediasResponse []*ViewSocialMediaResponse
 
+type EditSocialMediaResponse struct {
+	SocialMediaID  uint64    `json:"id"`
+	Name           string    `json:"name"`
+	SocialMediaURL string    `json:"social_media_url"`
+	UserID         uint64    `json:"user_id"`
+	UpdatedAt      time.Time `json:"updated_at"`
+}
+
 func NewSocialMediaCreateResponse(scmd models.SocialMedia, userID uint64, socialMediaID uint64) *CreateSocialMediaResponse {
 	return &CreateSocialMediaResponse{
 		SocialMediaID:  socialMediaID,
@@ -59,4 +67,14 @@ func NewViewSocialMediasResponse(pp models.PeopleSocialMediaJoined) ViewSocialMe
 		viewSocialMediasResponse = append(viewSocialMediasResponse, peopleSocialMedia)
 	}
 	return viewSocialMediasResponse
+}
+
+func NewEditSocialMediaResponse(scmd models.SocialMedia, userID uint64) *EditSocialMediaResponse {
+	return &EditSocialMediaResponse{
+		SocialMediaID:  scmd.SocialMediaID,
+		Name:           scmd.Name,
+		SocialMediaURL: scmd.SocialMediaURL,
+		UserID:         userID,
+		UpdatedAt:      time.Now(),
+	}
 }

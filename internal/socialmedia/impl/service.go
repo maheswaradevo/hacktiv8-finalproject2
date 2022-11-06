@@ -21,10 +21,10 @@ func ProvideSocialMediaService(repo SocialMediaRepository) *SocialMediaServiceIm
 func (scmd *SocialMediaServiceImpl) CreateSocialMedia(ctx context.Context, data *dto.CreateSocialMediaRequest, userID uint64) (res *dto.CreateSocialMediaResponse, err error) {
 	socialMediaData := data.ToEntity()
 
-	socialMediaID, err := scmd.repo.CreateSocialMedia(ctx, *socialMediaData, userID) 
+	socialMediaID, err := scmd.repo.CreateSocialMedia(ctx, *socialMediaData, userID)
 	if err != nil {
 		log.Printf("[CreateSocialMedia] failed to store user data to database: %v", err)
-		return 
+		return
 	}
 
 	return dto.NewSocialMediaCreateResponse(*socialMediaData, userID, socialMediaID), nil
@@ -47,4 +47,26 @@ func (scmd *SocialMediaServiceImpl) ViewSocialMedia(ctx context.Context) (dto.Vi
 		return nil, err
 	}
 	return dto.NewViewSocialMediasResponse(res), nil
+}
+
+func (scmd *SocialMediaServiceImpl) UpdateSocialMedia(ctx context.Context, data *dto.EditSocialMediaRequest, socialMediaID uint64, userID uint64) (*dto.EditSocialMediaResponse, error) {
+	editPhoto := data.ToEntity()
+	check, err := scmd.repo.CheckSocialMedia(ctx, socialMediaID, userID)
+	if err != nil {
+		log.Printf("[UpdateSocialMedia] failed to check photo with, userID: %v, err: %v", userID, err)
+		return nil, err
+	}
+	if !check {
+		err = errors.ErrDataNotFound
+		log.Printf("[UpdateSocialMedia] no photo in userID: %v", userID)
+		return nil, err
+	}
+	editPhoto.SocialMediaID = socialMediaID
+
+	err = scmd.repo.UpdateSocialMedia(ctx, *editPhoto, socialMediaID)
+	if err != nil {
+		log.Printf("[UpdateSocialMedia] failed to update the photo, id: %v, err: %v", socialMediaID, err)
+		return nil, err
+	}
+	return dto.NewEditSocialMediaResponse(*editPhoto, userID), nil
 }

@@ -14,3 +14,15 @@ func (dto *CreateSocialMediaRequest) ToEntity() (scmd *models.SocialMedia) {
 	}
 	return
 }
+
+type EditSocialMediaRequest struct {
+	Name    string `json:"name"`
+	SocialMediaUrl string `json:"social_media_url"`
+}
+
+func (dto *EditSocialMediaRequest) ToEntity() *models.SocialMedia {
+	return &models.SocialMedia{
+		Name: dto.Name,
+		SocialMediaURL: dto.SocialMediaUrl,
+	}
+}
