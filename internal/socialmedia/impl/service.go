@@ -50,23 +50,23 @@ func (scmd *SocialMediaServiceImpl) ViewSocialMedia(ctx context.Context) (dto.Vi
 }
 
 func (scmd *SocialMediaServiceImpl) UpdateSocialMedia(ctx context.Context, data *dto.EditSocialMediaRequest, socialMediaID uint64, userID uint64) (*dto.EditSocialMediaResponse, error) {
-	editPhoto := data.ToEntity()
+	editSocialMedia := data.ToEntity()
 	check, err := scmd.repo.CheckSocialMedia(ctx, socialMediaID, userID)
 	if err != nil {
-		log.Printf("[UpdateSocialMedia] failed to check photo with, userID: %v, err: %v", userID, err)
+		log.Printf("[UpdateSocialMedia] failed to check social media with, userID: %v, err: %v", userID, err)
 		return nil, err
 	}
 	if !check {
 		err = errors.ErrDataNotFound
-		log.Printf("[UpdateSocialMedia] no photo in userID: %v", userID)
+		log.Printf("[UpdateSocialMedia] no social media in userID: %v", userID)
 		return nil, err
 	}
-	editPhoto.SocialMediaID = socialMediaID
+	editSocialMedia.SocialMediaID = socialMediaID
 
-	err = scmd.repo.UpdateSocialMedia(ctx, *editPhoto, socialMediaID)
+	err = scmd.repo.UpdateSocialMedia(ctx, *editSocialMedia, socialMediaID)
 	if err != nil {
-		log.Printf("[UpdateSocialMedia] failed to update the photo, id: %v, err: %v", socialMediaID, err)
+		log.Printf("[UpdateSocialMedia] failed to update the social media, id: %v, err: %v", socialMediaID, err)
 		return nil, err
 	}
-	return dto.NewEditSocialMediaResponse(*editPhoto, userID), nil
+	return dto.NewEditSocialMediaResponse(*editSocialMedia, userID), nil
 }
