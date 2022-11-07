@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v4"
@@ -31,6 +32,7 @@ func (scmd *SocialMediaHandler) InitHandler() {
 	protectedRoute.Use(middleware.AuthMiddleware())
 	protectedRoute.POST("/social-medias", scmd.createSocialMedia)
 	protectedRoute.GET("/social-medias", scmd.viewSocialMedia)
+	protectedRoute.PUT("/social-medias/:socialMediaID", scmd.updateSocialMedia)
 }
 
 func (scmd *SocialMediaHandler) createSocialMedia(c *gin.Context) {
@@ -59,6 +61,31 @@ func (scmd *SocialMediaHandler) viewSocialMedia(c *gin.Context) {
 	res, err := scmd.as.ViewSocialMedia(c)
 	if err != nil {
 		log.Printf("[viewSocialMedia] failed to view social media, err: %v", err)
+		errResponse := utils.NewErrorResponse(c.Writer, err)
+		c.JSON(errResponse.Error.Code, errResponse)
+		return
+	}
+	response := utils.NewSuccessResponseWriter(c.Writer, http.StatusOK, "SUCCESS", res)
+	c.JSON(http.StatusOK, response)
+}
+
+func (scmd *SocialMediaHandler) updateSocialMedia(c *gin.Context) {
+	data := &dto.EditSocialMediaRequest{}
+	err := json.NewDecoder(c.Request.Body).Decode(data)
+	if err != nil {
+		log.Printf("[updateSocialMedia] failed to parse json data: %v", err)
+		errResponse := utils.NewErrorResponse(c.Writer, errors.ErrInvalidRequestBody)
+		c.JSON(errResponse.Error.Code, errResponse)
+		return
+	}
+	userData := c.MustGet("userData").(jwt.MapClaims)
+	userID := uint64(userData["user_id"].(float64))
+	socialMediaID := c.Param("socialMediaID")
+	socialMediaIDConv, _ := strconv.ParseUint(socialMediaID, 10, 64)
+
+	res, err := scmd.as.UpdateSocialMedia(c, data, socialMediaIDConv, userID)
+	if err != nil {
+		log.Printf("[UpdateSocialMedia] failed to update social media, id: %v, err: %v", socialMediaIDConv, err)
 		errResponse := utils.NewErrorResponse(c.Writer, err)
 		c.JSON(errResponse.Error.Code, errResponse)
 		return
