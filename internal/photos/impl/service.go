@@ -46,3 +46,25 @@ func (ph *PhotoServiceImpl) ViewPhoto(ctx context.Context) (dto.ViewPhotosRespon
 	}
 	return dto.NewViewPhotosResponse(res), nil
 }
+
+func (ph *PhotoServiceImpl) UpdatePhoto(ctx context.Context, data *dto.EditPhotoRequest, photoID uint64, userID uint64) (*dto.EditPhotoResponse, error) {
+	editPhoto := data.ToEntity()
+	check, err := ph.repo.CheckPhoto(ctx, photoID, userID)
+	if err != nil {
+		log.Printf("[UpdatePhoto] failed to check photo with, userID: %v, err: %v", userID, err)
+		return nil, err
+	}
+	if !check {
+		err = errors.ErrDataNotFound
+		log.Printf("[UpdatePhoto] no photo in userID: %v", userID)
+		return nil, err
+	}
+	editPhoto.PhotoID = photoID
+
+	err = ph.repo.UpdatePhoto(ctx, *editPhoto, photoID)
+	if err != nil {
+		log.Printf("[UpdatePhoto] failed to update the photo, id: %v, err: %v", photoID, err)
+		return nil, err
+	}
+	return dto.NewEditPhotoResponse(*editPhoto, userID), nil
+}

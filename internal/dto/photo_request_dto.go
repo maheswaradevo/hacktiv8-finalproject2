@@ -8,6 +8,20 @@ type PostPhotoRequest struct {
 	PhotoUrl string `json:"photo_url"`
 }
 
+type EditPhotoRequest struct {
+	Title    string `json:"title"`
+	Caption  string `json:"caption"`
+	PhotoUrl string `json:"photo_url"`
+}
+
+func (dto *EditPhotoRequest) ToEntity() *models.Photo {
+	return &models.Photo{
+		Title:    dto.Title,
+		Caption:  dto.Caption,
+		PhotoUrl: dto.PhotoUrl,
+	}
+}
+
 func (dto *PostPhotoRequest) ToEntity() *models.Photo {
 	return &models.Photo{
 		Title:    dto.Title,
