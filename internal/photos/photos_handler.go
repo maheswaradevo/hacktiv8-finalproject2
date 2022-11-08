@@ -30,6 +30,7 @@ func (p *photoHandler) InitHandler() {
 	photoRoute.POST("/photos", p.postPhoto)
 	photoRoute.GET("/photos", p.viewPhoto)
 	photoRoute.PUT("/photos/:photoID", p.updatePhoto)
+	photoRoute.DELETE("photos/:photoID", p.deletePhoto)
 }
 
 func (p *photoHandler) postPhoto(c *gin.Context) {
@@ -82,6 +83,23 @@ func (p *photoHandler) updatePhoto(c *gin.Context) {
 	photoIDConv, _ := strconv.ParseUint(photoID, 10, 64)
 
 	res, err := p.ps.UpdatePhoto(c, data, photoIDConv, userID)
+	if err != nil {
+		log.Printf("[updatePhoto] failed to update photo, id: %v, err: %v", photoIDConv, err)
+		errResponse := utils.NewErrorResponse(c.Writer, err)
+		c.JSON(errResponse.Error.Code, errResponse)
+		return
+	}
+	response := utils.NewSuccessResponseWriter(c.Writer, http.StatusOK, "SUCCESS", res)
+	c.JSON(http.StatusOK, response)
+}
+
+func (p *photoHandler) deletePhoto(c *gin.Context) {
+	photoID := c.Param("photoID")
+	photoIDConv, _ := strconv.ParseUint(photoID, 10, 64)
+	userData := c.MustGet("userData").(jwt.MapClaims)
+	userID := uint64(userData["user_id"].(float64))
+
+	res, err := p.ps.DeletePhoto(c, photoIDConv, userID)
 	if err != nil {
 		log.Printf("[updatePhoto] failed to update photo, id: %v, err: %v", photoIDConv, err)
 		errResponse := utils.NewErrorResponse(c.Writer, err)
