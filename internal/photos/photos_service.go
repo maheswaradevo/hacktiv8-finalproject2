@@ -12,6 +12,7 @@ type PhotoService interface {
 	PostPhoto(ctx context.Context, data *dto.PostPhotoRequest, userID uint64) (*dto.PostPhotoResponse, error)
 	ViewPhoto(ctx context.Context) (dto.ViewPhotosResponse, error)
 	UpdatePhoto(ctx context.Context, data *dto.EditPhotoRequest, photoID uint64, userID uint64) (*dto.EditPhotoResponse, error)
+	DeletePhoto(ctx context.Context, photoID uint64, userID uint64) (*dto.DeletePhotoResponse, error)
 }
 
 func ProvidePhotoService(db *sql.DB) PhotoService {

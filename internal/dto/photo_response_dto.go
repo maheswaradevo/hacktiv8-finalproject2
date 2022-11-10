@@ -35,6 +35,10 @@ type EditPhotoResponse struct {
 	UpdatedAt time.Time `json:"updated_at"`
 }
 
+type DeletePhotoResponse struct {
+	Message string `json:"message"`
+}
+
 type userResponse struct {
 	Email    string `json:"email"`
 	Username string `json:"username"`
@@ -88,4 +92,10 @@ func NewViewPhotosResponse(pp models.PeoplePhotoJoined) ViewPhotosResponse {
 		viewPhotosResponse = append(viewPhotosResponse, peoplePhoto)
 	}
 	return viewPhotosResponse
+}
+
+func NewDeletePhotoResponse(msg string) *DeletePhotoResponse {
+	return &DeletePhotoResponse{
+		Message: msg,
+	}
 }
