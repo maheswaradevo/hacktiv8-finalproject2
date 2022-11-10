@@ -70,3 +70,23 @@ func (scmd *SocialMediaServiceImpl) UpdateSocialMedia(ctx context.Context, data 
 	}
 	return dto.NewEditSocialMediaResponse(*editSocialMedia, userID), nil
 }
+
+func (scmd *SocialMediaServiceImpl) DeleteSocialMedia(ctx context.Context, socialMediaID uint64, userID uint64) (*dto.DeleteSocialMediaResponse, error) {
+	check, err := scmd.repo.CheckSocialMedia(ctx, socialMediaID, userID)
+	if err != nil {
+		log.Printf("[DeleteSocialMedia] failed to check socialMediaID: %v, err: %v", socialMediaID, err)
+		return nil, err
+	}
+	if !check {
+		err = errors.ErrDataNotFound
+		log.Printf("[socialMediaID] data with socialMediaID %v not found", socialMediaID)
+		return nil, err
+	}
+	err = scmd.repo.DeleteSocialMedia(ctx, socialMediaID)
+	if err != nil {
+		log.Printf("[socialMediaID] failed to delete social media, socialMediaID: %v, err: %v", socialMediaID, err)
+		return nil, err
+	}
+	msg := "Your social media has been successfully deleted"
+	return dto.NewDeleteSocialMediaResponse(msg), nil
+}
