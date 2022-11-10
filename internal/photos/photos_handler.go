@@ -101,7 +101,7 @@ func (p *photoHandler) deletePhoto(c *gin.Context) {
 
 	res, err := p.ps.DeletePhoto(c, photoIDConv, userID)
 	if err != nil {
-		log.Printf("[updatePhoto] failed to update photo, id: %v, err: %v", photoIDConv, err)
+		log.Printf("[deletePhoto] failed to delete photo, id: %v, err: %v", photoIDConv, err)
 		errResponse := utils.NewErrorResponse(c.Writer, err)
 		c.JSON(errResponse.Error.Code, errResponse)
 		return
