@@ -12,6 +12,7 @@ type SocialMediaService interface {
 	CreateSocialMedia(ctx context.Context, data *dto.CreateSocialMediaRequest, userID uint64) (res *dto.CreateSocialMediaResponse, err error)
 	ViewSocialMedia(ctx context.Context) (dto.ViewSocialMediasResponse, error)
 	UpdateSocialMedia(ctx context.Context, data *dto.EditSocialMediaRequest, socialMediaID uint64, userID uint64) (*dto.EditSocialMediaResponse, error)
+	DeleteSocialMedia(ctx context.Context, socialMediaID uint64, userID uint64) (*dto.DeleteSocialMediaResponse, error)
 }
 
 func ProvideSocialMediaService(db *sql.DB) SocialMediaService {

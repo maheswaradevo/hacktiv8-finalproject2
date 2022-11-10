@@ -34,6 +34,10 @@ type EditSocialMediaResponse struct {
 	UpdatedAt      time.Time `json:"updated_at"`
 }
 
+type DeleteSocialMediaResponse struct {
+	Message string `json:"message"`
+}
+
 func NewSocialMediaCreateResponse(scmd models.SocialMedia, userID uint64, socialMediaID uint64) *CreateSocialMediaResponse {
 	return &CreateSocialMediaResponse{
 		SocialMediaID:  socialMediaID,
@@ -76,5 +80,11 @@ func NewEditSocialMediaResponse(scmd models.SocialMedia, userID uint64) *EditSoc
 		SocialMediaURL: scmd.SocialMediaURL,
 		UserID:         userID,
 		UpdatedAt:      time.Now(),
+	}
+}
+
+func NewDeleteSocialMediaResponse(msg string) *DeleteSocialMediaResponse {
+	return &DeleteSocialMediaResponse{
+		Message: msg,
 	}
 }

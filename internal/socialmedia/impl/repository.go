@@ -14,6 +14,7 @@ type SocialMediaRepository interface {
 	CountSocialMedia(ctx context.Context) (int, error)
 	UpdateSocialMedia(ctx context.Context, reqData models.SocialMedia, socialMediaID uint64) error
 	CheckSocialMedia(ctx context.Context, socialMediaID uint64, userID uint64) (bool, error)
+	DeleteSocialMedia(ctx context.Context, socialMediaID uint64) error
 }
 type SocialMediaImpl struct {
 	db *sql.DB
@@ -31,6 +32,7 @@ var (
 	COUNT_SOCIAL_MEDIA  = "SELECT COUNT(*) FROM social_media;"
 	UPDATE_SOCIAL_MEDIA = "UPDATE social_media SET name = ?, social_media_url = ? WHERE id = ?;"
 	CHECK_SOCIAL_MEDIA  = "SELECT id FROM social_media WHERE id = ? AND user_id = ?;"
+	DELETE_SOCIAL_MEDIA = "DELETE FROM social_media WHERE id=?;"
 )
 
 func (scmd *SocialMediaImpl) CreateSocialMedia(ctx context.Context, data models.SocialMedia, userID uint64) (uint64, error) {
@@ -135,4 +137,19 @@ func (scmd *SocialMediaImpl) CheckSocialMedia(ctx context.Context, socialMediaID
 		return true, nil
 	}
 	return false, nil
+}
+
+func (scmd *SocialMediaImpl) DeleteSocialMedia(ctx context.Context, socialMediaID uint64) error {
+	query := DELETE_SOCIAL_MEDIA
+	stmt, err := scmd.db.PrepareContext(ctx, query)
+	if err != nil {
+		log.Printf("[DeleteSocialMedia] failed to prepare the statement, err: %v", err)
+		return err
+	}
+	_, err = stmt.QueryContext(ctx, socialMediaID)
+	if err != nil {
+		log.Printf("[DeleteSocialMedia] failed to delete the data, socialMediaID: %v, err: %v", socialMediaID, err)
+		return err
+	}
+	return nil
 }
