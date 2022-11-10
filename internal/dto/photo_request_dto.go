@@ -3,9 +3,9 @@ package dto
 import "github.com/maheswaradevo/hacktiv8-finalproject2/internal/models"
 
 type PostPhotoRequest struct {
-	Title    string `json:"title"`
+	Title    string `json:"title" validate:"required"`
 	Caption  string `json:"caption"`
-	PhotoUrl string `json:"photo_url"`
+	PhotoUrl string `json:"photo_url" validate:"required"`
 }
 
 type EditPhotoRequest struct {

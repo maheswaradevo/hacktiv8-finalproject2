@@ -3,10 +3,10 @@ package dto
 import "github.com/maheswaradevo/hacktiv8-finalproject2/internal/models"
 
 type UserRegistrationRequest struct {
-	Email    string `json:"email"`
-	Password string `json:"password"`
-	Username string `json:"username"`
-	Age      int    `json:"age"`
+	Email    string `json:"email" validate:"required"`
+	Password string `json:"password" validate:"required,min=6"`
+	Username string `json:"username" validate:"required"`
+	Age      int    `json:"age" validate:"required,numeric,min=9"`
 }
 
 type UserSignInRequest struct {
