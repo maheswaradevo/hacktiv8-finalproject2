@@ -126,7 +126,7 @@ func (auth AuthServiceImpl) createAccessToken(user *models.User) (string, error)
 
 	claim := jwt.MapClaims{}
 	claim["authorized"] = true
-	claim["exp"] = time.Now().Add(time.Minute * 15).Unix()
+	claim["exp"] = time.Now().Add(time.Hour * 8).Unix()
 	claim["user_id"] = user.UserID
 
 	token := jwt.NewWithClaims(cfg.JWT_SIGNING_METHOD, claim)

@@ -68,3 +68,23 @@ func (ph *PhotoServiceImpl) UpdatePhoto(ctx context.Context, data *dto.EditPhoto
 	}
 	return dto.NewEditPhotoResponse(*editPhoto, userID), nil
 }
+
+func (ph *PhotoServiceImpl) DeletePhoto(ctx context.Context, photoID uint64, userID uint64) (*dto.DeletePhotoResponse, error) {
+	check, err := ph.repo.CheckPhoto(ctx, photoID, userID)
+	if err != nil {
+		log.Printf("[DeletePhoto] failed to check photoID: %v, err: %v", photoID, err)
+		return nil, err
+	}
+	if !check {
+		err = errors.ErrDataNotFound
+		log.Printf("[DeletePhoto] data with photoID %v not found", photoID)
+		return nil, err
+	}
+	err = ph.repo.DeletePhoto(ctx, photoID)
+	if err != nil {
+		log.Printf("[DeletePhoto] failed to delete photo, photoID: %v, err: %v", photoID, err)
+		return nil, err
+	}
+	msg := "Your photo has been successfully deleted"
+	return dto.NewDeletePhotoResponse(msg), nil
+}

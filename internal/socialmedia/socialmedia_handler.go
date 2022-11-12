@@ -33,6 +33,7 @@ func (scmd *SocialMediaHandler) InitHandler() {
 	protectedRoute.POST("/social-medias", scmd.createSocialMedia)
 	protectedRoute.GET("/social-medias", scmd.viewSocialMedia)
 	protectedRoute.PUT("/social-medias/:socialMediaID", scmd.updateSocialMedia)
+	protectedRoute.DELETE("social-medias/:socialMediaID", scmd.deleteSocialMedia)
 }
 
 func (scmd *SocialMediaHandler) createSocialMedia(c *gin.Context) {
@@ -86,6 +87,23 @@ func (scmd *SocialMediaHandler) updateSocialMedia(c *gin.Context) {
 	res, err := scmd.as.UpdateSocialMedia(c, data, socialMediaIDConv, userID)
 	if err != nil {
 		log.Printf("[UpdateSocialMedia] failed to update social media, id: %v, err: %v", socialMediaIDConv, err)
+		errResponse := utils.NewErrorResponse(c.Writer, err)
+		c.JSON(errResponse.Error.Code, errResponse)
+		return
+	}
+	response := utils.NewSuccessResponseWriter(c.Writer, http.StatusOK, "SUCCESS", res)
+	c.JSON(http.StatusOK, response)
+}
+
+func (scmd *SocialMediaHandler) deleteSocialMedia(c *gin.Context) {
+	socialMediaID := c.Param("socialMediaID")
+	socialMediaIDConv, _ := strconv.ParseUint(socialMediaID, 10, 64)
+	userData := c.MustGet("userData").(jwt.MapClaims)
+	userID := uint64(userData["user_id"].(float64))
+
+	res, err := scmd.as.DeleteSocialMedia(c, socialMediaIDConv, userID)
+	if err != nil {
+		log.Printf("[deleteSocialMedia] failed to delete social media, id: %v, err: %v", socialMediaIDConv, err)
 		errResponse := utils.NewErrorResponse(c.Writer, err)
 		c.JSON(errResponse.Error.Code, errResponse)
 		return

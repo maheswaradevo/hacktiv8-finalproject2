@@ -14,6 +14,7 @@ type PhotoRepository interface {
 	CountPhoto(ctx context.Context) (int, error)
 	UpdatePhoto(ctx context.Context, reqData models.Photo, photoID uint64) error
 	CheckPhoto(ctx context.Context, photoID uint64, userID uint64) (bool, error)
+	DeletePhoto(ctx context.Context, photoID uint64) error
 }
 
 type photoImpl struct {
@@ -30,6 +31,7 @@ var (
 	COUNT_PHOTO  = "SELECT COUNT(*) FROM photo;"
 	UPDATE_PHOTO = "UPDATE photo SET title = ?, caption = ?, photo_url = ? WHERE id = ?;"
 	CHECK_PHOTO  = "SELECT id FROM photo WHERE id = ? AND user_id = ?;"
+	DELETE_PHOTO = "DELETE FROM photo WHERE id=?;"
 )
 
 func (p photoImpl) PostPhoto(ctx context.Context, data models.Photo) (photoID uint64, err error) {
@@ -128,4 +130,19 @@ func (p photoImpl) CheckPhoto(ctx context.Context, photoID uint64, userID uint64
 		return true, nil
 	}
 	return false, nil
+}
+
+func (p photoImpl) DeletePhoto(ctx context.Context, photoID uint64) error {
+	query := DELETE_PHOTO
+	stmt, err := p.db.PrepareContext(ctx, query)
+	if err != nil {
+		log.Printf("[DeletePhoto] failed to prepare the statement, err: %v", err)
+		return err
+	}
+	_, err = stmt.QueryContext(ctx, photoID)
+	if err != nil {
+		log.Printf("[DeletePhoto] failed to delete the data, photoID: %v, err: %v", photoID, err)
+		return err
+	}
+	return nil
 }
