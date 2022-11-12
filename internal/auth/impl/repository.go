@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"log"
 
+	"github.com/go-sql-driver/mysql"
 	"github.com/maheswaradevo/hacktiv8-finalproject2/internal/models"
 	"github.com/maheswaradevo/hacktiv8-finalproject2/pkg/errors"
 )
@@ -38,12 +39,13 @@ func (auth *AuthImpl) InsertUser(ctx context.Context, data models.User) (uint64,
 	query := INSERT_USER
 	stmt, err := auth.db.PrepareContext(ctx, query)
 	if err != nil {
-		log.Printf("[InserUser] failed to prepare the statement: %v", err)
+		log.Printf("[InsertUser] failed to prepare the statement: %v", err)
 		return 0, err
 	}
 	res, err := stmt.ExecContext(ctx, data.Email, data.Password, data.Age, data.Username)
-	if err != nil {
-		log.Printf("[InserUser] failed to insert user to the database: %v", err)
+	if err != nil && err.(*mysql.MySQLError).Number == 1062 {
+		err = errors.ErrDuplicateEntry
+		log.Printf("[InsertUser] there's duplicate entry, err: %v", err)
 		return 0, err
 	}
 	userID, _ := res.LastInsertId()

@@ -16,6 +16,7 @@ var (
 	ErrInvalidCred        = errors.New("password is invalid")
 	ErrUnauthorized       = errors.New("user is unauthorized")
 	ErrDataNotFound       = errors.New("data not found")
+	ErrDuplicateEntry     = errors.New("duplicate field entry")
 )
 
 func NewErrorData(code int, message string) dto.ErrorData {
@@ -42,4 +43,5 @@ var errorMap = map[error]dto.ErrorData{
 	ErrInvalidCred:        NewErrorData(http.StatusBadRequest, ErrInvalidCred.Error()),
 	ErrUnauthorized:       NewErrorData(http.StatusUnauthorized, ErrUnauthorized.Error()),
 	ErrDataNotFound:       NewErrorData(http.StatusNotFound, ErrDataNotFound.Error()),
+	ErrDuplicateEntry:     NewErrorData(http.StatusBadRequest, ErrDuplicateEntry.Error()),
 }

@@ -6,7 +6,8 @@ CREATE TABLE IF NOT EXISTS `user`(
     age INT NOT NULL,
     created_at TIMESTAMP NOT NULL DEFAULT NOW(),
     updated_at TIMESTAMP NOT NULL DEFAULT NOW() ON UPDATE NOW(),
-    PRIMARY KEY (id)
+    PRIMARY KEY (id),
+    UNIQUE KEY unique_username(username)
 );
 
 CREATE TABLE IF NOT EXISTS `photo`(
