@@ -26,7 +26,7 @@ func (scmd *SocialMediaServiceImpl) CreateSocialMedia(ctx context.Context, data 
 	validateError := validate.Struct(data)
 	if validateError != nil {
 		validateError = errors.ErrInvalidRequestBody
-		log.Printf("[PostPHoto] there's data that not through the validate process")
+		log.Printf("[CreateSocialMedia] there's data that not through the validate process")
 		return nil, validateError
 	}
 	socialMediaID, err := scmd.repo.CreateSocialMedia(ctx, *socialMediaData, userID)
@@ -59,6 +59,15 @@ func (scmd *SocialMediaServiceImpl) ViewSocialMedia(ctx context.Context) (dto.Vi
 
 func (scmd *SocialMediaServiceImpl) UpdateSocialMedia(ctx context.Context, data *dto.EditSocialMediaRequest, socialMediaID uint64, userID uint64) (*dto.EditSocialMediaResponse, error) {
 	editSocialMedia := data.ToEntity()
+
+	validate := validator.New()
+	validateError := validate.Struct(data)
+	if validateError != nil {
+		validateError = errors.ErrInvalidRequestBody
+		log.Printf("[UpdateSocialMedia] there's data that not through the validate process")
+		return nil, validateError
+	}
+
 	check, err := scmd.repo.CheckSocialMedia(ctx, socialMediaID, userID)
 	if err != nil {
 		log.Printf("[UpdateSocialMedia] failed to check social media with, userID: %v, err: %v", userID, err)

@@ -16,8 +16,8 @@ func (dto *CreateSocialMediaRequest) ToEntity() (scmd *models.SocialMedia) {
 }
 
 type EditSocialMediaRequest struct {
-	Name           string `json:"name"`
-	SocialMediaUrl string `json:"social_media_url"`
+	Name           string `json:"name" validate:"required"`
+	SocialMediaUrl string `json:"social_media_url" validate:"required"`
 }
 
 func (dto *EditSocialMediaRequest) ToEntity() *models.SocialMedia {

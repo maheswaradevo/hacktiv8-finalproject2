@@ -59,6 +59,14 @@ func (cmt *CommentServiceImpl) ViewComment(ctx context.Context) (dto.ViewComment
 func (cmt *CommentServiceImpl) UpdateComment(ctx context.Context, commentID uint64, userID uint64, data *dto.EditCommentRequest) (*dto.EditPhotoResponse, error) {
 	editedComment := data.ToCommentEntity()
 
+	validate := validator.New()
+	validateError := validate.Struct(data)
+	if validateError != nil {
+		validateError = errors.ErrInvalidRequestBody
+		log.Printf("[UpdateComment] there's data that not through the validate process")
+		return nil, validateError
+	}
+
 	check, err := cmt.repo.CheckComment(ctx, commentID, userID)
 	if err != nil {
 		log.Printf("[UpdateComment] failed to check comment with, userID: %v, err: %v", userID, err)
