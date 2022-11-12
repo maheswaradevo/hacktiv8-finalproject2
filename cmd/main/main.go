@@ -1,6 +1,8 @@
 package main
 
 import (
+	"fmt"
+
 	"github.com/gin-gonic/gin"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/maheswaradevo/hacktiv8-finalproject2/internal/global/config"
@@ -16,5 +18,6 @@ func main() {
 	r := gin.Default()
 
 	routes.Init(r, db)
-	r.Run(cfg.PORT)
+	port := fmt.Sprintf("%s:%s", "0.0.0.0", cfg.PORT)
+	r.Run(port)
 }
