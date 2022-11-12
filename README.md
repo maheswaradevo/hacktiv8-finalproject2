@@ -1,6 +1,6 @@
 # My Gram
 
-Repository for Hacktiv8 Final Project 2.
+Repository for Hacktiv8 Final Project 2. Already deployed on railways `hacktiv8-fp2.up.railway.app/api/v1`
 
 ## Developer's Manual
 

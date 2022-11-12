@@ -4,6 +4,7 @@ import (
 	"context"
 	"log"
 
+	"github.com/go-playground/validator/v10"
 	"github.com/maheswaradevo/hacktiv8-finalproject2/internal/dto"
 	"github.com/maheswaradevo/hacktiv8-finalproject2/pkg/errors"
 )
@@ -21,6 +22,13 @@ func ProvideSocialMediaService(repo SocialMediaRepository) *SocialMediaServiceIm
 func (scmd *SocialMediaServiceImpl) CreateSocialMedia(ctx context.Context, data *dto.CreateSocialMediaRequest, userID uint64) (res *dto.CreateSocialMediaResponse, err error) {
 	socialMediaData := data.ToEntity()
 
+	validate := validator.New()
+	validateError := validate.Struct(data)
+	if validateError != nil {
+		validateError = errors.ErrInvalidRequestBody
+		log.Printf("[PostPHoto] there's data that not through the validate process")
+		return nil, validateError
+	}
 	socialMediaID, err := scmd.repo.CreateSocialMedia(ctx, *socialMediaData, userID)
 	if err != nil {
 		log.Printf("[CreateSocialMedia] failed to store user data to database: %v", err)

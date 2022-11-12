@@ -5,9 +5,11 @@ import (
 	"log"
 	"time"
 
+	"github.com/go-playground/validator/v10"
 	"github.com/golang-jwt/jwt/v4"
 	"github.com/maheswaradevo/hacktiv8-finalproject2/internal/dto"
 	"github.com/maheswaradevo/hacktiv8-finalproject2/internal/global/config"
+	"github.com/maheswaradevo/hacktiv8-finalproject2/internal/global/utils"
 	"github.com/maheswaradevo/hacktiv8-finalproject2/internal/models"
 	"github.com/maheswaradevo/hacktiv8-finalproject2/pkg/errors"
 	"golang.org/x/crypto/bcrypt"
@@ -26,6 +28,19 @@ func ProvideAuthService(repo AuthRepository) *AuthServiceImpl {
 func (auth *AuthServiceImpl) RegisterUser(ctx context.Context, data *dto.UserRegistrationRequest) (*dto.UserSignUpResponse, error) {
 	userData := data.ToEntity()
 
+	validate := validator.New()
+	validateError := validate.Struct(data)
+	if validateError != nil {
+		validateError = errors.ErrInvalidRequestBody
+		log.Printf("[RegisterUser] there's data that not through the validate process")
+		return nil, validateError
+	}
+	isValidEmail := utils.IsValidEmail(userData.Email)
+	if !isValidEmail {
+		err := errors.ErrInvalidRequestBody
+		log.Printf("[RegisterUser] wrong email format, email: %v", userData.Email)
+		return nil, err
+	}
 	exist, err := auth.repo.GetUserEmail(ctx, userData.Email)
 	if err != nil && err != errors.ErrInvalidResources {
 		log.Printf("[RegisterUser] failed to check duplicate email: %v", err)

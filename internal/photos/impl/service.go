@@ -4,6 +4,7 @@ import (
 	"context"
 	"log"
 
+	"github.com/go-playground/validator/v10"
 	"github.com/maheswaradevo/hacktiv8-finalproject2/internal/dto"
 	"github.com/maheswaradevo/hacktiv8-finalproject2/pkg/errors"
 )
@@ -19,6 +20,14 @@ func ProvidePhotoService(repo PhotoRepository) *PhotoServiceImpl {
 func (ph *PhotoServiceImpl) PostPhoto(ctx context.Context, data *dto.PostPhotoRequest, userID uint64) (*dto.PostPhotoResponse, error) {
 	photoData := data.ToEntity()
 	photoData.UserID = userID
+
+	validate := validator.New()
+	validateError := validate.Struct(data)
+	if validateError != nil {
+		validateError = errors.ErrInvalidRequestBody
+		log.Printf("[PostPHoto] there's data that not through the validate process")
+		return nil, validateError
+	}
 	res, err := ph.repo.PostPhoto(ctx, *photoData)
 	if err != nil {
 		log.Printf("[PostPhoto] failed to post the photo, err: %v", err)

@@ -4,6 +4,7 @@ import (
 	"context"
 	"log"
 
+	"github.com/go-playground/validator/v10"
 	"github.com/maheswaradevo/hacktiv8-finalproject2/internal/dto"
 	"github.com/maheswaradevo/hacktiv8-finalproject2/pkg/errors"
 )
@@ -21,6 +22,13 @@ func ProvideCommentService(repo CommentRepository) *CommentServiceImpl {
 func (cmt *CommentServiceImpl) CreateComment(ctx context.Context, data *dto.CreateCommentRequest, userID uint64) (res *dto.CreateCommentResponse, err error) {
 	commentData := data.ToCommentEntity()
 	commentData.UserID = userID
+	validate := validator.New()
+	validateError := validate.Struct(data)
+	if validateError != nil {
+		validateError = errors.ErrInvalidRequestBody
+		log.Printf("[CreateComment] there's data that not through the validate process")
+		return nil, validateError
+	}
 	commentID, err := cmt.repo.CreateComment(ctx, *commentData)
 	if err != nil {
 		log.Printf("[CreateComment] failed to store user data to database: %v", err)

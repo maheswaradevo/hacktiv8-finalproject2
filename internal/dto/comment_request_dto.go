@@ -3,7 +3,7 @@ package dto
 import "github.com/maheswaradevo/hacktiv8-finalproject2/internal/models"
 
 type CreateCommentRequest struct {
-	Message string `json:"message"`
+	Message string `json:"message" validate:"required"`
 	PhotoID uint64 `json:"photo_id"`
 }
 
