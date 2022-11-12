@@ -16,7 +16,7 @@ func (dto *CreateCommentRequest) ToCommentEntity() (cmt *models.Comment) {
 }
 
 type EditCommentRequest struct {
-	Message string `json:"message"`
+	Message string `json:"message" validate:"required"`
 }
 
 func (dto *EditCommentRequest) ToCommentEntity() *models.CommentUserJoined {

@@ -15,9 +15,9 @@ type UserSignInRequest struct {
 }
 
 type UserEditProfileRequest struct {
-	Email    string `json:"email"`
-	Username string `json:"username"`
-	Age      int    `json:"age"`
+	Email    string `json:"email" validate:"required"`
+	Username string `json:"username" validate:"required"`
+	Age      int    `json:"age" validate:"required,numeric,min=9"`
 }
 
 func (dto *UserRegistrationRequest) ToEntity() (usr *models.User) {

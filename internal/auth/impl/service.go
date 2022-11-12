@@ -95,6 +95,14 @@ func (auth *AuthServiceImpl) LoginUser(ctx context.Context, data *dto.UserSignIn
 func (auth AuthServiceImpl) UpdateUser(ctx context.Context, data *dto.UserEditProfileRequest, userID uint64) (res *dto.UserEditProfileResponse, err error) {
 	userInfo := data.ToEntity()
 
+	validate := validator.New()
+	validateError := validate.Struct(data)
+	if validateError != nil {
+		validateError = errors.ErrInvalidRequestBody
+		log.Printf("[UpdateUser] there's data that not through the validate process")
+		return nil, validateError
+	}
+
 	exist, err := auth.repo.GetUserEmail(ctx, userInfo.Email)
 	if err != nil && err != errors.ErrInvalidResources {
 		log.Printf("[UpdateUser] failed to check user existed: %v", err)

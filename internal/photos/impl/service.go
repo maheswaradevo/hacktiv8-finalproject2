@@ -25,7 +25,7 @@ func (ph *PhotoServiceImpl) PostPhoto(ctx context.Context, data *dto.PostPhotoRe
 	validateError := validate.Struct(data)
 	if validateError != nil {
 		validateError = errors.ErrInvalidRequestBody
-		log.Printf("[PostPHoto] there's data that not through the validate process")
+		log.Printf("[PostPhoto] there's data that not through the validate process")
 		return nil, validateError
 	}
 	res, err := ph.repo.PostPhoto(ctx, *photoData)
@@ -58,6 +58,14 @@ func (ph *PhotoServiceImpl) ViewPhoto(ctx context.Context) (dto.ViewPhotosRespon
 
 func (ph *PhotoServiceImpl) UpdatePhoto(ctx context.Context, data *dto.EditPhotoRequest, photoID uint64, userID uint64) (*dto.EditPhotoResponse, error) {
 	editPhoto := data.ToEntity()
+
+	validate := validator.New()
+	validateError := validate.Struct(data)
+	if validateError != nil {
+		validateError = errors.ErrInvalidRequestBody
+		log.Printf("[UpdatePhoto] there's data that not through the validate process")
+		return nil, validateError
+	}
 	check, err := ph.repo.CheckPhoto(ctx, photoID, userID)
 	if err != nil {
 		log.Printf("[UpdatePhoto] failed to check photo with, userID: %v, err: %v", userID, err)
